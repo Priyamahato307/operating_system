@@ -1,0 +1,116 @@
+#include<stdio.h> 
+#include<iostream>
+#include<stdlib.h>
+	int n,arrivalTime[100],burstTime[100],completionTime[100],waitingTime[100];
+	int turnaroundTime[100],rem_bt[100],totalTimeQuantum=0,readQueue[100];
+	double avgTurnaroundTime=0,avgWaitingTime=0;
+    int currentTime,RemainingProc=n,temp,timeQuantum1,timeQuantum2;
+	int timeQuantumItration,remainingProcess;
+int main() 
+{
+	using namespace std;
+    cout<<"Enter the number of process :";
+    cin>>n;
+    cout<<"\n\nEnter the arrival time and burst time of the processes\n";
+    for(int j=0;j<n;j++)
+    {
+    	cout<<"\nProcess P"<<j+1<<"\n";
+		cout<<"\tArrival time = "; 
+		cin>>arrivalTime[j];
+		cout<<"\tBurst time = "; 
+		cin>>burstTime[j]; 
+		rem_bt[j]=burstTime[j];
+		totalTimeQuantum+=burstTime[j];
+	}
+	system("CLS");
+	cout<<"The details of time quantum are as follows:\n";
+	cout<<"\nThe time quantum for first Iteration is 3.\n";
+	cout<<"The time quantum for second Iteration is 6.\n"; 
+	cout<<"After second Iteration the Shortest job will assign CPU.\n\n";
+	timeQuantum1=3;
+	timeQuantum2=6;
+	timeQuantumItration=1;
+	currentTime=0;
+	remainingProcess=n;
+	for(int r=0;r<remainingProcess;r++) 
+	{	
+		if(rem_bt[r]<timeQuantum1 && rem_bt[r]>=0&&currentTime<9)
+		{ 
+			currentTime+=rem_bt[r]; 
+			rem_bt[r]=0;
+			temp = 1;
+			timeQuantumItration++;
+			remainingProcess--;
+		} 
+		else if(rem_bt[r]>0&&currentTime<9)
+		{ 
+			if(timeQuantumItration==1)
+			{rem_bt[r]-=timeQuantum1; 
+			timeQuantumItration++;
+			currentTime+=timeQuantum1;}
+			else if(timeQuantumItration==2)
+			{rem_bt[r]-=timeQuantum2;
+			currentTime+=timeQuantum2;} 
+		} 
+		else if(rem_bt[r]<9 && rem_bt[r]>=3&&currentTime<9)
+		{ 
+			currentTime+=rem_bt[r]; 
+			rem_bt[r]=0;  
+			remainingProcess--;
+			temp = 1;
+		} 
+		else if(rem_bt[r]>3&&currentTime<9)
+		{ 
+			rem_bt[r]-=timeQuantum2; 
+			currentTime+=timeQuantum2; 
+		} 
+		if(rem_bt[r]==0 && temp==1)			
+		{ 
+			RemainingProc--;	
+			completionTime[r]=currentTime;	
+			cout<<completionTime[r];
+			turnaroundTime[r]=completionTime[r]-arrivalTime[r];	
+			waitingTime[r]=turnaroundTime[r]-burstTime[r];	
+			temp = 0;       
+		}  
+	}
+	for(int k=0;k<remainingProcess;k++)
+	{
+		int minimum =rem_bt[0];
+		int i = 0,j=0;
+		
+	    for (i; i < n; i++)
+        {
+        if (minimum > rem_bt[i] && currentTime>arrivalTime[i])
+			{
+				minimum = rem_bt[i];
+			}
+       	}
+    	
+        for (j; j < n; j++)	
+        {
+        	if(rem_bt[j]==minimum)
+        	break;
+        }
+    	if(currentTime>arrivalTime[j] && minimum!=100000)
+    	{
+    		rem_bt[j]=100000; 
+			currentTime+=minimum; 
+			completionTime[j]=currentTime;
+			turnaroundTime[j]=completionTime[j]-arrivalTime[j];	
+			waitingTime[j]=turnaroundTime[j]-burstTime[j];	
+		}
+	}
+	cout<<"\nProcess\tArrival Time\tBurst Time\tCompletion Time\tTurnAround Time\tWaiting Time ";
+    for(int i=0;i<n;i++)
+    {
+        cout<<"\nP"<<i+1<<"\t"<<arrivalTime[i]<<"\t\t"<<burstTime[i]<<"\t\t"<<completionTime[i]<<"\t\t"<<turnaroundTime[i]<<"\t\t"<<waitingTime[i];
+    }
+    for(int k=0;k<n;k++)
+    {
+    	avgWaitingTime+=waitingTime[k];
+    	avgTurnaroundTime+=turnaroundTime[k];
+	}
+	cout<<"\n\n Average Trunaround time : "<<(avgTurnaroundTime)/n<<endl;
+	cout<<" Average Waiting time : "<<(avgWaitingTime)/n<<endl;
+}
